@@ -163,8 +163,6 @@ yt-dlp \
     --no-simulate \
     --no-write-auto-subs \
     --restrict-filenames \
-    --embed-thumbnail \
-    --embed-chapters \
     --xattrs \
     "${source_url}";
 
