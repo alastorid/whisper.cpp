@@ -154,9 +154,12 @@ msg "Downloading VOD...";
 # for videos only available to logged-in users.
 ################################################################################
 yt-dlp \
-    -f "bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best" \
-    -o "${temp_dir}/%(title)s-%(id)s.vod.mp4" \
+    -f "bestaudio[ext=m4a]/baseaudio" \
+    -o "${temp_dir}/%(title)s-%(id)s.%(ext)s" \
     --print-to-file "%(filename)s" "${temp_filename}" \
+    --extract-audio \
+    --audio-format m4a \
+    --audio-quality 0 \
     --no-simulate \
     --no-write-auto-subs \
     --restrict-filenames \
@@ -165,11 +168,11 @@ yt-dlp \
     --xattrs \
     "${source_url}";
 
-title_name="$(xargs basename -s .vod.mp4 < ${temp_filename})";
+title_name="$(xargs basename -s .m4a < "${temp_filename}")"
 
 msg "Extracting audio and resampling...";
 
-ffmpeg -i "${temp_dir}/${title_name}.vod.mp4"  \
+ffmpeg -i "${temp_dir}/${title_name}.m4a"  \
     -hide_banner \
     -vn \
     -loglevel error \
