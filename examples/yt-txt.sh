@@ -129,18 +129,25 @@ v="${source_url#*v=}"
 v="${v%%&*}"
 out_file_name="yt${v}"
 out_txt="${out_file_name}.txt"
+
+VIDEO_ID=${v}
+URL="https://www.youtube.com/watch?v=${VIDEO_ID}"
+TITLE=$(yt-dlp --get-title "$URL")
+UPLOAD_DATE=$(yt-dlp --print upload_date "$URL")
+FORMATTED_DATE=$(date -j -f "%Y%m%d" "$UPLOAD_DATE" +"%Y.%m.%d")
+
 ################################################################################
 # Download the video, put the dynamic output filename into a variable.
 # Optionally add --cookies-from-browser BROWSER[+KEYRING][:PROFILE][::CONTAINER]
 # for videos only available to logged-in users.
 ################################################################################
 if [ ! -f ${out_txt} ] ; then
-    yt-dlp -f "bestaudio[ext=m4a]" -q --no-warnings --no-part -o - "${source_url}" \
+    yt-dlp -f "bestaudio[ext=m4a]" -q --no-warnings --no-part -o - "${URL}" \
         | ffmpeg -hide_banner -loglevel error -i - -af silenceremove=1:0:-50dB  -ar 16000 -ac 1 -c:a pcm_s16le -f wav - \
         | "${WHISPER_EXECUTABLE}" -bs 6 -np -fa -m "${MODEL_PATH}" -l "${WHISPER_LANG}" -f - -t "${WHISPER_THREAD_COUNT}" | tee ${out_txt}
 fi
 
-p="請列出此文稿中的所有關鍵要點及相關訊息，並對每個要點進行詳細描述。請特別注意以下事項：書名、電影名稱、提及的股票及其分析（包括何時看多或看空，並提供具體的分析理由）。摘錄全部有具體價值觀的原句。最後，請以表格的形式清楚地呈現財務及金融重點資訊，確保內容清晰易懂。"
+p="${FORMATTED_DATE} ${TITLE}\n-------\n請列出此文稿中的所有關鍵要點及相關訊息，並對每個要點進行詳細描述。請特別注意以下事項：書名、電影名稱、提及的股票及其分析（包括何時看多或看空，並提供具體的分析理由）。摘錄全部有具體價值觀的原句。最後，請以表格的形式清楚地呈現財務及金融重點資訊，確保內容清晰易懂。"
 
 export LANG=en_US.UTF-8
 export LC_ALL=en_US.UTF-8
