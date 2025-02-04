@@ -137,7 +137,7 @@ out_txt="${out_file_name}.txt"
 if [ ! -f ${out_txt} ] ; then
     yt-dlp -f "bestaudio[ext=m4a]" -q --no-warnings --no-part -o - "${source_url}" \
         | ffmpeg -hide_banner -loglevel error -i - -af silenceremove=1:0:-50dB  -ar 16000 -ac 1 -c:a pcm_s16le -f wav - \
-        | "${WHISPER_EXECUTABLE}" -bs 6 -np -fa -m "${MODEL_PATH}" -l "Chinese" -f - -t "${WHISPER_THREAD_COUNT}" | tee ${out_txt}
+        | "${WHISPER_EXECUTABLE}" -bs 6 -np -fa -m "${MODEL_PATH}" -l "${WHISPER_LANG}" -f - -t "${WHISPER_THREAD_COUNT}" | tee ${out_txt}
 fi
 
 p="請列出此文稿中的所有關鍵要點及相關訊息，並對每個要點進行詳細描述。請特別注意以下事項：書名、電影名稱、提及的股票及其分析（包括何時看多或看空，並提供具體的分析理由）。最後，請以表格的形式清楚地呈現財務及金融重點資訊，確保內容清晰易懂。"
@@ -146,7 +146,7 @@ export LANG=en_US.UTF-8
 export LC_ALL=en_US.UTF-8
 
 if [ -f ${out_txt} ] ; then
-    cat ${out_txt}|sed -e 's/\[[^]]*\]..//g'|uniq > /tmp/__tmp.txt
+    cat ${out_txt}|sed -e 's/\[[^]]*\]..//g'|sed -e 's/哦//g;s/这个/这/g;s/这+/这/g'|uniq > /tmp/__tmp.txt
 
     osascript -e "
     set filePath to POSIX file \"/tmp/__tmp.txt\" as alias
