@@ -1,0 +1,4 @@
+make large-v3-turbo
+./models/generate-coreml-model.sh base.en
+cmake -B build -DWHISPER_COREML=1
+cmake --build build -j --config Release
