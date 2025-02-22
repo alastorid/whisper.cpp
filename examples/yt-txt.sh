@@ -150,37 +150,12 @@ else
     FORMATTED_DATE=$(date -j -f "%Y%m%d" "$UPLOAD_DATE" +"%Y.%m.%d")
 
     if [ ! -f ${out_txt} ] ; then
-        yt-dlp -f "bestaudio[ext=m4a]" -q --no-warnings --no-part -o - "${URL}" \
+        yt-dlp -f "bestaudio[ext=m4a]" -q --no-warnings --no-part --cookies-from-browser safari -o - "${URL}" \
             | ffmpeg -hide_banner -loglevel error -i - \
                   -af silenceremove=1:0:-50dB \
                   -ar 16000 -ac 1 -c:a pcm_s16le -f wav - \
             | "${WHISPER_EXECUTABLE}" -bs 6 -np -fa -m "${MODEL_PATH}" -l "${WHISPER_LANG}" -f - -t "${WHISPER_THREAD_COUNT}" | tee ${out_txt}
     fi
-fi
-
-p="${FORMATTED_DATE} ${TITLE}\n-------\n請列出此文稿中的所有關鍵要點及相關訊息，並對每個要點進行詳細描述。請特別注意以下事項：書名、電影名稱、提及的股票及其分析（包括何時看多或看空，並提供具體的分析理由）。摘錄全部有具體價值觀的原句。最後，請以表格的形式清楚地呈現財務及金融重點資訊，確保內容清晰易懂。"
-
-export LANG=en_US.UTF-8
-export LC_ALL=en_US.UTF-8
-
-if [ -f ${out_txt} ] ; then
-    cat ${out_txt}|sed -e 's/\[[^]]*\]..//g'|sed -e 's/哦//g;s/这个/这/g;s/这+/这/g'|uniq > /tmp/__tmp.txt
-
-    osascript -e "
-    set filePath to POSIX file \"/tmp/__tmp.txt\" as alias
-    set fileRef to open for access filePath
-    set fileContents to (read fileRef as «class utf8»)
-    close access fileRef
-    tell application \"Notes\"
-        try
-            set theFolder to folder \"wang\"
-        on error
-            make new folder with properties {name:\"wang\"}
-            set theFolder to folder \"wang\"
-        end try
-        make new note in theFolder with properties {name:\"${p}\", body:fileContents}
-    end tell"
-    rm /tmp/__tmp.txt
 fi
 
 # "List key points and all mentioned key information like book name, movie name, stock name and the reason of all thins in this transcript in traditional Chinese in detail:"
