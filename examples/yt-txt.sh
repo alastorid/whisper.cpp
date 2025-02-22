@@ -150,7 +150,7 @@ else
     FORMATTED_DATE=$(date -j -f "%Y%m%d" "$UPLOAD_DATE" +"%Y.%m.%d")
 
     if [ ! -f ${out_txt} ] ; then
-        yt-dlp -f "bestaudio[ext=m4a]" -q --no-warnings --no-part --cookies-from-browser safari -o - "${URL}" \
+        yt-dlp --cookies-from-browser firefox -f "bestaudio[ext=m4a]" -q --no-warnings --no-part -o - "${URL}" \
             | ffmpeg -hide_banner -loglevel error -i - \
                   -af silenceremove=1:0:-50dB \
                   -ar 16000 -ac 1 -c:a pcm_s16le -f wav - \
