@@ -145,12 +145,12 @@ if [ -f "$source_url" ]; then
 else
     VIDEO_ID=${v}
     URL="https://www.youtube.com/watch?v=${VIDEO_ID}"
-    TITLE=$(yt-dlp --get-title "$URL")
-    UPLOAD_DATE=$(yt-dlp --print upload_date "$URL")
+    TITLE=$(yt-dlp --get-title --cookies-from-browser safari "$URL")
+    UPLOAD_DATE=$(yt-dlp --print upload_date --cookies-from-browser safari "$URL")
     FORMATTED_DATE=$(date -j -f "%Y%m%d" "$UPLOAD_DATE" +"%Y.%m.%d")
 
     if [ ! -f ${out_txt} ] ; then
-        yt-dlp --cookies-from-browser firefox -f "bestaudio[ext=m4a]" -q --no-warnings --no-part -o - "${URL}" \
+        yt-dlp -f "bestaudio[ext=m4a]" --cookies-from-browser safari -q --no-warnings --no-part -o - "${URL}" \
             | ffmpeg -hide_banner -loglevel error -i - \
                   -af silenceremove=1:0:-50dB \
                   -ar 16000 -ac 1 -c:a pcm_s16le -f wav - \
