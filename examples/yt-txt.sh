@@ -157,7 +157,3 @@ else
             | "${WHISPER_EXECUTABLE}" -bs 6 -np -fa -m "${MODEL_PATH}" -l "${WHISPER_LANG}" -f - -t "${WHISPER_THREAD_COUNT}" | tee ${out_txt}
     fi
 fi
-
-# "List key points and all mentioned key information like book name, movie name, stock name and the reason of all thins in this transcript in traditional Chinese in detail:"
-
-
