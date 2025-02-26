@@ -138,7 +138,6 @@ if [ -f "$source_url" ]; then
 
     if [ ! -f "$out_txt" ]; then
         ffmpeg -hide_banner -loglevel error -i "$source_url" \
-            -af silenceremove=1:0:-50dB \
             -ar 16000 -ac 1 -c:a pcm_s16le -f wav - \
         | "$WHISPER_EXECUTABLE" -bs 6 -np -fa -m "$MODEL_PATH" -l "$WHISPER_LANG" -f - -t "$WHISPER_THREAD_COUNT" | tee "$out_txt"
     fi
@@ -152,7 +151,6 @@ else
     if [ ! -f ${out_txt} ] ; then
         yt-dlp -f "bestaudio[ext=m4a]" --cookies-from-browser safari -q --no-warnings --no-part -o - "${URL}" \
             | ffmpeg -hide_banner -loglevel error -i - \
-                  -af silenceremove=1:0:-50dB \
                   -ar 16000 -ac 1 -c:a pcm_s16le -f wav - \
             | "${WHISPER_EXECUTABLE}" -bs 6 -np -fa -m "${MODEL_PATH}" -l "${WHISPER_LANG}" -f - -t "${WHISPER_THREAD_COUNT}" | tee ${out_txt}
     fi
