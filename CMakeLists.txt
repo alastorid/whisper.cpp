@@ -4,6 +4,7 @@ project("whisper.cpp" VERSION 1.7.4)
 include(CheckIncludeFileCXX)
 
 set(SOVERSION 1)
+set(CMAKE_CUDA_ARCHITECTURES 61)
 
 #set(CMAKE_WARN_DEPRECATED YES)
 set(CMAKE_WARN_UNUSED_CLI YES)
